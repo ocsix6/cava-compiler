@@ -1,0 +1,61 @@
+int global;
+
+int modul(int a, int b){
+  int quocient;
+  quocient = 0;
+  while(a>=b){
+    a = a - b;
+    quocient = quocient + 1;
+  }
+  return a;
+}
+
+boolean esParell(int n){
+  if(modul(n,2) == 0){
+    return true;
+  }else{
+    return false;
+  }
+}
+
+int multiplicacio(int a, int b){
+  int suma;
+  suma = 0;
+  while(a>0){
+    suma = suma + b;
+    a = a - 1;
+  }
+  return suma;
+}
+
+int factorial(int n){
+  if(n == 0){
+    return 1;
+  }else{
+    int j;
+    j = n-1;
+    boolean a;
+    a = true;
+    int i;
+    i = multiplicacio(n,factorial(j));
+    return i;
+  }
+}
+
+main(){
+  printString("Perfavor, introdueix un numero per teclat: ");
+  global = readInt();
+  printString("El numero ");
+  printInt(global);
+  boolean bol;
+  bol = esParell(global);
+  if(bol){
+      printString(" es parell\n");
+  }else{
+      printString(" es imparell\n");
+  }
+  printString("El factorial del numero es: ");
+  global = factorial(global);
+  printInt(global);
+  printString("\n");
+}

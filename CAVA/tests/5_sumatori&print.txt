@@ -1,0 +1,20 @@
+string func(){
+  return "Hola";
+}
+
+int sumatori(int n){
+  if(n == 0){
+    return 0;
+  }else{
+    int a;
+    a = n-1;
+    return n + sumatori(a);
+  }
+}
+
+main(){
+  string a;
+  a = func();
+  printString(a);
+  sumatori(3);
+}

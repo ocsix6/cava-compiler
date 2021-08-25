@@ -1,0 +1,17 @@
+int multiplicacio(int a, int b){
+  int suma;
+  suma = 0;
+  while(a>0){
+    suma = suma + b;
+    a = a - 1;
+  }
+  return suma;
+}
+
+main(){
+  int a;
+  int b;
+  a = 563;
+  b = 2147483647;
+  printInt(multiplicacio(b,a));
+}

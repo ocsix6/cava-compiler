@@ -1,0 +1,32 @@
+main(){
+boolean bol1;
+bol1 = true;
+boolean bol2;
+bol2 = false;
+bol1 = bol2;
+string joan;
+joan = "Joan";
+int a;
+a = 4;
+int b;
+b = 5;
+int c;
+c = b + a;
+int d;
+d = c + a;
+d = 7;
+d= d + 4;
+d = 1 + d;
+d = 1 - d;
+d = d - 1;
+d = 0 - d;
+  while(4<5){
+    if(4>5){
+
+    }
+    printString("Ctrl + C per sortir \n");
+  }
+  int x;
+  x = 10;
+  x = 7;
+}

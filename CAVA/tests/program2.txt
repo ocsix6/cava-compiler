@@ -1,0 +1,41 @@
+int modul(int a, int b){
+  int quocient;
+  quocient = 0;
+  while(a>=b){
+    a = a -b;
+    quocient = quocient + 1;
+  }
+  return a;
+}
+
+boolean esParell(int n){
+  if(modul(n,2) == 0){
+    return true;
+  }else{
+    return false;
+  }
+}
+
+main(){
+  printString("Quans de numeros vols inserir: ");
+  int usr;
+  usr = readInt();
+  int comptador;
+  int idx;
+  idx = 1;
+  while(idx <= usr){
+    printString("Numero  ");
+    printInt(idx);
+    printString(": ");
+    idx = idx + 1;
+    int aux;
+    aux = readInt();
+    if(esParell(aux)){
+      comptador = comptador +1;
+    }
+
+  }
+  printString("Has inserit ");
+  printInt(comptador);
+  printString(" nombres parells \n");
+}

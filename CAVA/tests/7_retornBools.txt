@@ -1,0 +1,15 @@
+boolean retorna(boolean a){
+  return a;
+}
+
+main(){
+  boolean a;
+  a = true;
+  boolean b;
+  b = retorna(a);
+  if(b){
+    printString("El valor de b es true \n");
+  }else{
+    printString("El valor de b es false \n");
+  }
+}

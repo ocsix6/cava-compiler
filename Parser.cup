@@ -1,0 +1,272 @@
+/**
+  java -jar java-cup-11b.jar Parser.cup
+**/
+
+
+package cava;
+import cava.Taula_de_simbols.DFuncio;
+import cava.Taula_de_simbols.DParametre;
+import cava.Taula_de_simbols.DProcediment;
+import cava.Taula_de_simbols.TaulaDeSimbols;
+import java_cup.runtime.*;
+import cava.Taula_de_simbols.DTipus;
+import cava.Taula_de_simbols.TSB;
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import cava.genc3a.Subprograma;
+import cava.genc3a.Generador;
+
+class Parser;
+
+// Esteim inserint nous métodes i atributs privats dins la classe Parser
+// Podriem crear una taula de simbols com una classe de java. Y aqui dins tenir un
+// atribut de l'objecte classe de simbols
+parser code {:
+private Scanner scanner;
+public TaulaDeSimbols TS = new TaulaDeSimbols();
+Graphwiz archiuArbre;
+public Generador gen = new Generador();
+
+FileWriter fw;
+BufferedWriter bw;
+public Parser(Scanner scanner) {
+this.scanner = scanner;
+try {
+TS.afegirTSBs("int",new DTipus(TSB.INTEGER));
+     TS.afegirTSBs("boolean", new DTipus(TSB.BOOLEAN));
+     TS.afegirTSBs("string", new DTipus(TSB.STRING));
+
+     Subprograma sub = gen.nouSubprograma("printint", gen.novaEtiqueta("printint"), true);
+     Subprograma sub1 = gen.nouSubprograma("printstring", gen.novaEtiqueta("printstring"), true);
+     Subprograma sub2 = gen.nouSubprograma("readstring", gen.novaEtiqueta("readstring"), true);
+     Subprograma sub3 = gen.nouSubprograma("readint", gen.novaEtiqueta("readint"), false);
+     TS.afegir("printInt", new DProcediment(sub)); // PrintInt
+     TS.afegir("printString", new DProcediment(sub1)); // Println
+     TS.afegir("readString", new DProcediment(sub2)); //readString
+     TS.afegir("readInt", new DFuncio("int", sub3));
+
+     DParametre dpint = new DParametre("i","int", DParametre.argtipus.IN);
+     gen.entraSubPrograma(sub);
+     sub.afegirParam(gen.novaVariable(TSB.INTEGER, true));
+     gen.surtSubPrograma();
+     TS.posarParam("printInt", "i", dpint);
+
+     DParametre dpstring = new DParametre("s","string", DParametre.argtipus.IN);
+     gen.entraSubPrograma(sub1);
+     sub1.afegirParam(gen.novaVariable(TSB.STRING, true));
+     gen.surtSubPrograma();
+     TS.posarParam("printString", "s", dpstring);
+
+     DParametre dpreadString = new DParametre("f","string", DParametre.argtipus.IN);
+     gen.entraSubPrograma(sub2);
+     dpreadString.variable = gen.novaVariable(TSB.STRING, true);
+     sub2.afegirParam(dpreadString.variable);
+     gen.surtSubPrograma();
+     TS.posarParam("readString", "f", dpreadString);
+
+     //Un readInt no té paràmetres ja que retorna un integer
+
+
+     archiuArbre = new Graphwiz();
+     fw=new FileWriter("tokens.txt");
+     bw=new BufferedWriter(fw);
+ } catch (Exception ex) {
+     //Logger.getLogger(Parser.class.getName()).log(Level.SEVERE, null, ex);
+ }
+    }
+    public class ErrSintactic extends Exception {
+
+        public ErrSintactic() {
+            super("Hi ha un error sintàctic");
+        }
+    }
+
+    public void syntax_error(Symbol s){
+
+    }
+
+    public void unrecovered_syntax_error(Symbol s) throws
+    java.lang.Exception {
+        throw new ErrSintactic();
+      //report_fatal_error("", null);
+    }
+:}
+
+ // També aquí es poden afegir accions a realitzar quan es requereix un token.
+ // Quina funcio he de emplear per passarli toquens. Com hem de llegir els tokens. Demoment si arriben, ja va be
+scan with {:
+    Symbol n = scanner.next_token();
+    bw.write(n.toString()+"\n");
+    return n;
+:}
+
+terminal      String    LPAREN, RPAREN, INT, BOOLEAN, LCOR, RCOR, COMA, PCOMA, CONST, IGUAL, IF, ELSE, WHILE, RETURN, OR, AND, MENOR, MAJOR, SUMA, RESTA, TRUE, FALSE;
+terminal      String    ID,IGUALIGUAL, MAJORIG, MENORIG, NOTEQ, LBRACKET, RBRACKET;
+terminal      String    STRING;
+terminal      String    STRING_LITERAL;
+terminal      Integer   NUM;
+
+non terminal  SymbolPrograma PROGRAMA;
+non terminal  SymbolLlistaDecl LLISTDECLARACIONS;
+non terminal  SymbolDec DECLARACIO;
+non terminal  SymbolProc PROCEDURE;
+non terminal  SymbolFunProc FUNCPROC;
+non terminal  SymbolFunProcAp FUNCPROCCAP;
+non terminal  SymbolTipusVar TIPUSVAR;
+non terminal  SymbolCos COS;
+non terminal  SymbolFunc FUNCIO;
+non terminal  SymbolFuncFun FUNCFUN;
+non terminal  SymbolFunFuncap FUNCFUNCAP;
+non terminal  SymbolVar VARIABLE;
+non terminal  SymbolDecl DEC;
+non terminal  SymbolInstr INSTR;
+non terminal  SymbolAssig ASSIG;
+non terminal  SymbolIf INSTRIF;
+non terminal  SymbolWhile INSTRWHILE;
+non terminal  SymbolReturn INSTRETURN;
+non terminal  SymbolExp EXPRESIO;
+non terminal  SymbolExpAnd EXPRESIOAND;
+non terminal  SymbolExpRel EXPRESIOREL;
+non terminal  SymbolOpRel OPREL;
+non terminal  SymbolExpArit EXPRESIOARIT;
+non terminal  SymbolOpArit OPARIT;
+non terminal  SymbolTerme TERME;
+non terminal  SymbolCridada CRIDADA;
+non terminal  SymbolArgs ARGS;
+non terminal  SymbolLlistaArg LLISTARG;
+non terminal  SymbolA A;
+non terminal  M M;
+non terminal  M1 M1;
+
+start with PROGRAMA;
+
+PROGRAMA ::=  LLISTDECLARACIONS:v1    {: RESULT = new SymbolPrograma(this.parser,v1); :}
+     ;
+
+LLISTDECLARACIONS ::= DECLARACIO:v1  {: RESULT = new SymbolLlistaDecl(this.parser,v1); :}
+     | DECLARACIO:v1 LLISTDECLARACIONS:v2   {: RESULT = new SymbolLlistaDecl(this.parser,v1,v2); :}
+     ;
+
+DECLARACIO ::= PROCEDURE:v1 {: RESULT = new SymbolDec(this.parser,v1); :}
+     | FUNCIO:v1 {: RESULT = new SymbolDec(this.parser,v1); :}
+     | VARIABLE:v1 {: RESULT = new SymbolDec(this.parser,v1); :}
+     | ASSIG:v1 {: RESULT = new SymbolDec(this.parser,v1); :}
+     ;
+
+PROCEDURE ::= FUNCPROC:v1 COS:v2 {: RESULT = new SymbolProc(this.parser,v1, v2); :}
+     ;
+
+FUNCPROC ::= FUNCPROCCAP:v RPAREN {: RESULT = new SymbolFunProc(this.parser,v); :}
+     | ID:v LPAREN RPAREN     {: RESULT = new SymbolFunProc(this.parser,v); :}
+     ;
+
+FUNCPROCCAP ::= ID:v LPAREN TIPUSVAR:v1 ID:v2  {: RESULT = new SymbolFunProcAp(this.parser,v,v1,v2); :}
+     | FUNCPROCCAP:v COMA TIPUSVAR:v1 ID:v2    {: RESULT = new SymbolFunProcAp(this.parser,v,v1,v2); :}
+     ;
+
+FUNCIO ::= FUNCFUN:v COS:v1{: RESULT = new SymbolFunc(this.parser,v,v1); :}
+    ;
+
+FUNCFUN ::= TIPUSVAR:v FUNCFUNCAP:v1 RPAREN {: RESULT = new SymbolFuncFun(this.parser,v,v1); :}
+    | TIPUSVAR:v ID:v1 LPAREN RPAREN     {: RESULT = new SymbolFuncFun(this.parser,v,v1); :}
+    ;
+
+FUNCFUNCAP ::= ID:v LPAREN TIPUSVAR:v1 ID:v2  {: RESULT = new SymbolFunFuncap(this.parser,v,v1,v2); :}
+    | FUNCFUNCAP:v COMA TIPUSVAR:v1 ID:v2    {: RESULT = new SymbolFunFuncap(this.parser,v,v1,v2); :}
+    ;
+
+VARIABLE ::= TIPUSVAR:v1 ID:v2 PCOMA {: RESULT = new SymbolVar(this.parser,v1,v2); :}
+    | CONST TIPUSVAR:v1 ID:v2 IGUAL EXPRESIOREL:v3 PCOMA {: RESULT = new SymbolVar(this.parser,v1,v2,v3); :}
+    ;
+
+TIPUSVAR ::= INT:v {: RESULT = new SymbolTipusVar(this.parser,"int"); :}
+    | BOOLEAN:v {: RESULT = new SymbolTipusVar(this.parser,"boolean"); :}
+    | STRING:v {: RESULT = new SymbolTipusVar(this.parser,"string"); :}
+    ;
+
+COS ::= A LCOR DEC:v1 RCOR {: RESULT = new SymbolCos(this.parser,v1); :}
+    ;
+
+A   ::= {: RESULT = new SymbolA(this.parser); :}
+    ;
+
+DEC ::= INSTR:v1 M:v3 DEC:v2 {: RESULT = new SymbolDecl(this.parser,v1,v2,v3); :}
+    | VARIABLE:v1 DEC:v2 {: RESULT = new SymbolDecl(this.parser,v1,v2); :}
+    |                   {: RESULT = new SymbolDecl(this.parser); :}
+    ;
+
+INSTR ::= ASSIG:v1  {: RESULT = new SymbolInstr(this.parser,v1); :}
+    | INSTRIF:v1  {: RESULT = new SymbolInstr(this.parser,v1); :}
+    | INSTRWHILE:v1  {: RESULT = new SymbolInstr(this.parser,v1); :}
+    | INSTRETURN:v1  {: RESULT = new SymbolInstr(this.parser,v1); :}
+    | CRIDADA:v1 PCOMA {: RESULT = new SymbolInstr(this.parser,v1); :}
+    ;
+
+ASSIG ::= ID:v IGUAL EXPRESIO:v1 PCOMA  {: RESULT = new SymbolAssig(this.parser,v,v1); :}
+    ;
+
+INSTRIF ::= IF LPAREN EXPRESIO:v1 RPAREN M:v3 COS:v2  {: RESULT = new SymbolIf(this.parser,v1,v2,v3); :}
+    | IF LPAREN EXPRESIO:v1 RPAREN M:v4 COS:v2 ELSE M1:v5 COS:v3  {: RESULT = new SymbolIf(this.parser,v1,v2,v3,v4,v5); :}
+    ;
+
+M1 ::= {: RESULT = new M1(this.parser); :}
+    ;
+
+INSTRWHILE ::= WHILE LPAREN M:v3 EXPRESIO:v1 RPAREN M:v4 COS:v2 {: RESULT = new SymbolWhile(this.parser,v1,v2,v3,v4); :}
+    ;
+
+INSTRETURN ::= RETURN EXPRESIOREL:v1 PCOMA  {: RESULT = new SymbolReturn(this.parser,v1); :}
+    ;
+
+EXPRESIO ::= EXPRESIO:v1 OR M:v3 EXPRESIOAND:v2  {: RESULT = new SymbolExp(this.parser,v1,v2,v3); :}
+    | EXPRESIOAND:v1  {: RESULT = new SymbolExp(this.parser,v1); :}
+    ;
+
+M ::= {: RESULT = new M(this.parser); :}
+    ;
+
+EXPRESIOAND ::= EXPRESIOAND:v1 AND M:v3 EXPRESIOREL:v2 {: RESULT = new SymbolExpAnd(this.parser,v1,v2,v3); :}
+    | EXPRESIOREL:v1  {: RESULT = new SymbolExpAnd(this.parser,v1); :}
+    ;
+
+EXPRESIOREL ::= EXPRESIOREL:v1 OPREL:v2 EXPRESIOARIT:v3  {: RESULT = new SymbolExpRel(this.parser,v1,v2,v3); :}
+    | EXPRESIOARIT:v1  {: RESULT = new SymbolExpRel(this.parser,v1); :}
+    ;
+
+OPREL ::= MENOR:v {: RESULT = new SymbolOpRel(this.parser,"<"); :}
+    | MAJOR:v {: RESULT = new SymbolOpRel(this.parser,">");     :}
+    | IGUALIGUAL:v {: RESULT = new SymbolOpRel(this.parser,"==");    :}
+    | MAJORIG:v {: RESULT = new SymbolOpRel(this.parser,">=");  :}
+    | MENORIG:v {: RESULT = new SymbolOpRel(this.parser,"<=");  :}
+    | NOTEQ:v {: RESULT = new SymbolOpRel(this.parser,"!=");    :}
+    ;
+
+EXPRESIOARIT ::= EXPRESIOARIT:v1 OPARIT:v2 TERME:v3  {: RESULT = new SymbolExpArit(this.parser,v1,v2,v3); :}
+    | TERME:v1  {: RESULT = new SymbolExpArit(this.parser,v1); :}
+    ;
+
+OPARIT ::= SUMA:v  {: RESULT = new SymbolOpArit(this.parser, "+"); :}
+    | RESTA:v  {: RESULT = new SymbolOpArit(this.parser, "-"); :}
+    ;
+
+TERME ::= CRIDADA:v1  {: RESULT = new SymbolTerme(this.parser,v1); :}
+    | ID:v  {: RESULT = new SymbolTerme(this.parser,v); :}
+    | ID:v LBRACKET EXPRESIO:v2 RBRACKET  {: RESULT = new SymbolTerme(this.parser,v,v2); :}
+    | NUM:v {: RESULT = new SymbolTerme(this.parser,v); :}
+    | STRING_LITERAL:v  {: RESULT = new SymbolTerme(this.parser,v, 0); :}
+    | TRUE:v  {: RESULT = new SymbolTerme(this.parser,v, 1); :}
+    | FALSE:v  {: RESULT = new SymbolTerme(this.parser,v, 2); :}
+    | RESTA:v TERME:v1  {: RESULT = new SymbolTerme(this.parser,"-",v1); :}
+    | LPAREN EXPRESIO:v RPAREN  {: RESULT = new SymbolTerme(this.parser, v); :}
+    ;
+
+CRIDADA ::= ARGS:v {: RESULT = new SymbolCridada(this.parser,v); :}
+    ;
+
+ARGS ::= LLISTARG:v RPAREN {: RESULT = new SymbolArgs(this.parser,v); :}
+    | ID:v LPAREN RPAREN      {: RESULT = new SymbolArgs(this.parser,v); :}
+    ;
+
+LLISTARG ::= ID:v LPAREN TERME:v1  {: RESULT = new SymbolLlistaArg(this.parser,v,v1); :}
+    | LLISTARG:v COMA TERME:v1  {: RESULT = new SymbolLlistaArg(this.parser,v,v1); :}
+    ;

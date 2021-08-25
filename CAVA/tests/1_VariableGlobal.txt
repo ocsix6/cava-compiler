@@ -1,0 +1,29 @@
+int a;
+const string msg = "Hola mon!\n";
+
+holaMon(){
+  printString(msg);
+}
+
+int divisioEntera(int a, int b){
+    int quocient;
+    while(a>b){
+      quocient = quocient + 1;
+      a = a - b;
+    }
+    return quocient;
+}
+
+main(){
+printString("Insereix un número: ");
+  a = readInt();
+  if(a != 0 and a>0 and divisioEntera(a,10)>0){
+    printInt(a);
+    printString(" es mes gran que 10\n");
+  }else{
+      printInt(a);
+      printString(" no es mes gran que 10\n");
+  }
+  holaMon();
+  printString(msg);
+}

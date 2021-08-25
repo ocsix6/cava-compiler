@@ -1,0 +1,18 @@
+main(){
+  if(4<5 and false){
+    printString("And No funciona\n");
+  }else{
+    printString("And Funciona\n");
+  }
+  if((4<5 and false) or true){
+    printString("Or Funciona\n");
+  }else{
+    printString("Or No Funciona\n");
+  }
+
+  if(false or false){
+    printString("Or2 No Funciona\n");
+  }else{
+    printString("Or2 Funciona\n");
+  }
+}

@@ -1,0 +1,59 @@
+const int compta = 5;
+
+boolean foraSentit(boolean a){
+  return a;
+}
+
+printMissatge(string msg){
+    printString(msg);
+}
+
+int suma(int x, int y){
+  return x + y;
+}
+
+main(){
+  int idx;
+  string aux; aux = "Insereix un numero: ";
+  printMissatge(aux);
+  idx = readInt();
+  if(idx < 0){
+      printString("El nombre es negatiu\n");
+  }else{
+      printString("El nombre es positiu\n");
+  }
+  while(idx < compta){
+      printString("Comptador envant ");
+      printInt(idx);
+      idx = idx + 1;
+      printString("\n");
+  }
+
+  idx = 10;
+
+  while(idx > compta){
+    idx = idx - 1;
+    printString("Comptador endarrera ");
+    printInt(idx);
+    printString("\n");
+  }
+
+  if(false or false or idx == 5){
+    printString("Idx val 5\n");
+  }
+
+  if(idx != 5){
+
+  }else{
+    printString("Else funciona\n");
+  }
+
+  if(foraSentit(true) and true and 4<5){
+      printString("And funciona\n");
+  }
+
+  int sum;
+  sum = suma(6,6);
+  printInt(sum);
+
+}
